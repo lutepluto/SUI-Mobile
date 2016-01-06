@@ -47,8 +47,8 @@
     $.init = function() {
         var $page = getPage();
         var id = $page[0].id;
-        $.initPage();
-        $page.trigger("pageInit", [id, $page]);
+        // $.initPage();
+        // $page.trigger("pageInit", [id, $page]);
     };
 
     $(function() {

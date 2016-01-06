@@ -153,28 +153,45 @@
         }
         if (typeof value === 'undefined') {
             // Get value
-            if (this[0] && this[0].getAttribute) {
-                var dataKey = this[0].getAttribute('data-' + key);
+            // if (this[0] && this[0].getAttribute) {
+            //     var dataKey = this[0].getAttribute('data-' + key);
 
-                if (dataKey) {
-                    return dataKey;
-                } else if (this[0].smElementDataStorage && (key in this[0].smElementDataStorage)) {
+            //     if (dataKey) {
+            //         return dataKey;
+            //     } else if (this[0].smElementDataStorage && (key in this[0].smElementDataStorage)) {
 
 
-                    return this[0].smElementDataStorage[key];
+            //         return this[0].smElementDataStorage[key];
 
-                } else {
-                    return undefined;
-                }
-            } else return undefined;
+            //     } else {
+            //         return undefined;
+            //     }
+            // } else return undefined;
+            
+            // If the value zepto data function returns is not empty, returns it first
+            var dataKey = zeptoFnData.call(this, key)
+            if (dataKey) {
+              return dataKey
+            } else if (this[0] && this[0].smElementDataStorage && (key in this[0].smElementDataStorage)) {
+              return this[0].smElementDataStorage[key]
+            } else {
+              return undefined
+            }
 
         } else {
             // Set value
-            for (var i = 0; i < this.length; i++) {
-                var el = this[i];
-                if (!el.smElementDataStorage) el.smElementDataStorage = {};
-                el.smElementDataStorage[key] = value;
+            
+            // If data attribute exists on node, use zepto data function first
+            if (this.dataset()[key]) {
+              zeptoFnData.call(this, key, value)
+            } else {
+              for (var i = 0; i < this.length; i++) {
+                  var el = this[i];
+                  if (!el.smElementDataStorage) el.smElementDataStorage = {};
+                  el.smElementDataStorage[key] = value;
+              }
             }
+
             return this;
         }
     };

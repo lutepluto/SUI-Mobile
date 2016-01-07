@@ -69,7 +69,9 @@
 
   Push.prototype.transitionOut = function($remotePage, options) {
     // Tries to call before transition function
-    options && options.beforeTransition && options.beforeTransition()
+    options &&
+      options.beforeTransition &&
+      options.beforeTransition(this.$leadPage, $remotePage)
 
     this.$leadPage.trigger('pageAnimationStart', [$remotePage[0].id, $remotePage])
       .removeClass(animPageClasses)
@@ -102,7 +104,7 @@
 
   $(function() {
     var $currentPage = $('.page-current'),
-      $pushes = $currentPage.find('a[data-toggle="push"]')
+      $pushes = $currentPage.find('[data-toggle="push"]')
 
     if ($pushes.length) {
       $.push = new Push($currentPage)

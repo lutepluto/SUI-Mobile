@@ -67,7 +67,8 @@ module.exports = function(grunt) {
                   // 'js/infinite-scroll.js',
                   'js/searchbar.js',
                   'js/panels.js',
-                  'js/router.js',
+                  // 'js/router.js',
+                  'js/push.js',
                   'js/init.js',
                   'js/scroll-fix.js'
               ],

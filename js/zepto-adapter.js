@@ -147,6 +147,8 @@
             return dataset;
         } else return undefined;
     };
+
+    var zeptoFnData = $.fn.data
     $.fn.data = function(key, value) {
         if (typeof key === 'undefined') {
             return $(this).dataset();

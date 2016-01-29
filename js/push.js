@@ -116,7 +116,8 @@
       }
 
       // Removes remote page finally
-      $remotePage.remove()
+      $remotePage.find('*').off()
+      $remotePage.off().remove()
     })
   }
 

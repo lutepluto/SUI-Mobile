@@ -13,14 +13,16 @@
       'page-from-right-to-center',
       'page-from-left-to-center'
     ].join(' '),
-    objectToString = Object.prototype.toString
+    objectToString = Object.prototype.toString,
+    pageHistory = []
 
   var Push = function($page) {
     this.$leadPage = $page
-    this.originalUrl = location.href.split('#')[0]
+    // this.originalUrl = location.href.split('#')[0]
     if (!this.$leadPage[0].id) {
       this.$leadPage[0].id = this.genRandomID()
     }
+    // this.savePageHistory(this.$leadPage[0].id)
   }
 
   Push.prototype.genRandomID = function() {
@@ -31,15 +33,30 @@
     return $('.page-current')
   }
 
+  Push.prototype.getFirstPage = function() {
+    return $('.page').first()
+  }
+
+  Push.prototype.getLastPage = function() {
+    var last = pageHistory.pop()
+    return last ? $('#' + last) : this.getFirstPage()
+  }
+
+  Push.prototype.savePageHistory = function(pageId) {
+    pageHistory.push(pageId)
+  }
+
   Push.prototype.transitionIn = function($remotePage, callback) {
     if (!$remotePage[0].id) {
       $remotePage[0].id = this.genRandomID()
     }
+
     // Adds current page class
     $remotePage.hasClass(currentPageClass) || $remotePage.addClass(currentPageClass)
-    $remotePage.insertAfter($('.page')[0])
+    $remotePage.insertAfter($('.page').last())
 
     var $currentPage = this.getCurrentPage()
+    this.savePageHistory($currentPage[0].id)  // save page history
     $remotePage.trigger('pageAnimationStart', [$remotePage[0].id, $remotePage])
     $currentPage.removeClass(animPageClasses)
       .removeClass(currentPageClass)
@@ -68,12 +85,14 @@
   }
 
   Push.prototype.transitionOut = function($remotePage, options) {
+    var $lastPage = this.getLastPage()
+
     // Tries to call before transition function
     options &&
       options.beforeTransition &&
-      options.beforeTransition(this.$leadPage, $remotePage)
+      options.beforeTransition($lastPage, $remotePage)
 
-    this.$leadPage.trigger('pageAnimationStart', [$remotePage[0].id, $remotePage])
+    $lastPage.trigger('pageAnimationStart', [$remotePage[0].id, $remotePage])
       .removeClass(animPageClasses)
       .addClass(currentPageClass)
       .addClass('page-from-left-to-center')
@@ -81,11 +100,10 @@
       .removeClass(currentPageClass)
       .addClass('page-from-center-to-right')
 
-    var that = this
-    this.$leadPage.animationEnd(function() {
-      that.$leadPage.removeClass(animPageClasses)
-        .trigger('pageAnimationEnd', [that.$leadPage[0].id, that.$leadPage])
-        .trigger('pageReinit', [that.$leadPage[0].id, that.$leadPage])
+    $lastPage.animationEnd(function() {
+      $lastPage.removeClass(animPageClasses)
+        .trigger('pageAnimationEnd', [$lastPage[0].id, $lastPage])
+        .trigger('pageReinit', [$lastPage[0].id, $lastPage])
     })
     $remotePage.animationEnd(function() {
       $remotePage.removeClass(animPageClasses)
